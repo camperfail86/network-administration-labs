@@ -1,0 +1,29 @@
+---
+- name: File operations
+  hosts: my_servers
+  connection: local
+
+  vars:
+    test_file: "{{ ansible_env.HOME }}/ansible_lab3_test.txt"
+
+  tasks:
+    - name: Create file
+      copy:
+        dest: "{{ test_file }}"
+        content: "test_file_content\n"
+        mode: "0644"
+
+    - name: Read file
+      command: cat "{{ test_file }}"
+      changed_when: false
+
+    - name: Change content
+      copy:
+        dest: "{{ test_file }}"
+        content: "updated_file_content\n"
+        mode: "0644"
+
+    - name: Delete file
+      file:
+        path: "{{ test_file }}"
+        state: absent
