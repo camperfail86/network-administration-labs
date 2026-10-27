@@ -1,2 +1,6 @@
 ---
-# handlers file for caddy_deploy
+- name: Restart Caddy
+  community.general.homebrew_services:
+    name: caddy
+    path: "{{ brew_prefix.stdout }}/bin"
+    state: restarted

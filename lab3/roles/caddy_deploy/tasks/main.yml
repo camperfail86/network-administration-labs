@@ -1,2 +1,53 @@
 ---
-# tasks file for caddy_deploy
+- name: Install Caddy
+  community.general.homebrew:
+    name: caddy
+    state: present
+
+- name: Create site directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/caddy_site"
+    state: directory
+    mode: "0755"
+
+- name: Create log directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/caddy_logs"
+    state: directory
+    mode: "0755"
+
+- name: Get Homebrew installation path
+  ansible.builtin.command: brew --prefix
+  environment:
+    PATH: "/opt/homebrew/bin:/usr/local/bin:{{ ansible_env.PATH }}"
+  register: brew_prefix
+  changed_when: false
+
+- name: Check Caddy version
+  ansible.builtin.command: "{{ brew_prefix.stdout }}/bin/caddy version"
+  register: caddy_version
+  changed_when: false
+
+- name: Show Caddy version
+  ansible.builtin.debug:
+    msg: "{{ caddy_version.stdout }}"
+
+- name: Copy site page
+  ansible.builtin.copy:
+    src: index.html
+    dest: "{{ ansible_env.HOME }}/caddy_site/index.html"
+    mode: "0644"
+
+- name: Apply Caddy configuration
+  ansible.builtin.template:
+    src: Caddyfile.j2
+    dest: "{{ brew_prefix.stdout }}/etc/Caddyfile"
+    mode: "0644"
+  notify: Restart Caddy
+
+- name: Start Caddy
+  community.general.homebrew_services:
+    name: caddy
+    path: "{{ brew_prefix.stdout }}/bin"
+    state: present
+
