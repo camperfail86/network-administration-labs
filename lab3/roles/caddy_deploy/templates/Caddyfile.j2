@@ -1,0 +1,12 @@
+{{ domain_name }} {
+    tls internal
+
+    root * "{{ site_root }}"
+    file_server
+
+    log {
+        output file "{{ log.file }}"
+        format {{ log.format }}
+        level {{ log.level }}
+    }
+}

@@ -1,2 +1,8 @@
 ---
-# vars file for caddy_deploy
+domain_name: "localhost:8443"
+site_root: "{{ ansible_env.HOME }}/caddy_site"
+
+log:
+  file: "{{ ansible_env.HOME }}/caddy_logs/access.log"
+  format: "json"
+  level: "INFO"
